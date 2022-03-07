@@ -1,11 +1,10 @@
 import { TodoComponent } from "./components/TodoComponent";
 const App = () => {
-  return ( 
+  return (
     <div>
-      Hello
-      <TodoComponent/>
-    </div> 
+      <TodoComponent />
+    </div>
   );
-}
- 
+};
+
 export default App;

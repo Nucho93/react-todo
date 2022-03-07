@@ -1,17 +1,26 @@
 import { useState } from "react";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Button, Grid } from "@mui/material";
+import { Divider, Grid, Paper } from "@mui/material";
+import Header from "./Header";
+import Body from "./Body";
 
 export const TodoComponent = () => {
   const [todoValue, setTodoValue] = useState("");
   const [isEmpty, setEmpty] = useState(false);
   const [todoItems, setTodoItems] = useState(undefined);
-  console.log(todoValue);
 
   const handleTodoChange = (e) => {
     setEmpty(false);
     setTodoValue(e.target.value);
+  };
+
+  const delTodoItem = (idx) => {
+    const len = todoItems.length;
+    const begin = todoItems.slice(0, idx);
+    const end = todoItems.slice(idx + 1, len);
+
+    console.log(len, begin, end);
+    setTodoItems([...begin, ...end]);
   };
 
   const handleAddTodo = (e) => {
@@ -20,38 +29,46 @@ export const TodoComponent = () => {
       return;
     }
     setTodoItems((prevTodo) => {
-      if (prevTodo) return [...prevTodo, todoValue];
-      else return [todoValue];
+      if (prevTodo) {
+        const myMaxInt = prevTodo[prevTodo.length - 1].id + 1;
+        return [...prevTodo, { id: myMaxInt, value: todoValue }];
+      } else return [{ id: 100, value: todoValue }];
     });
+
+    setTodoValue("");
   };
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <Typography>Todos:</Typography>
+    <Grid container spacing={3} flexDirection="column" alignItems="center">
+      <Grid item xs={3}>
+        <Typography variant="h3">Todos:</Typography>
       </Grid>
-      <Grid item xs={12}>
-        <Grid container alignItems="center" justifyContent="center">
-          <Grid item xs={3}>
-            <TextField
-              error={isEmpty}
-              id="outlined-basic"
-              label="Todo"
-              variant="outlined"
-              value={todoValue}
-              onChange={handleTodoChange}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <Button onClick={handleAddTodo}>Add todo</Button>
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid item xs={12}>
-        {todoItems &&
-          todoItems.map((item) => <Typography key={item}>{item}</Typography>)}
 
-        {(!todoItems || todoItems.length == 0) && <>Items not found</>}
+      <Grid item xs={12}>
+        <Paper
+          sx={{
+            p: 2,
+            margin: "auto",
+            maxWidth: 500,
+            flexGrow: 1,
+            backgroundColor: (theme) =>
+              theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+          }}
+        >
+          <Grid container spacing={3}>
+            <Header
+              isEmpty={isEmpty}
+              todoValue={todoValue}
+              handleTodoChange={handleTodoChange}
+              handleAddTodo={handleAddTodo}
+            />
+
+            <Grid item xs={12}>
+              <Divider flexItem />
+            </Grid>
+            <Body todoItems={todoItems} delTodoItem={delTodoItem} />
+          </Grid>
+        </Paper>
       </Grid>
     </Grid>
   );
